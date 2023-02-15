@@ -1,0 +1,53 @@
+Step wise Building of this project :- 
+
+Ref: https://www.freecodecamp.org/news/build-a-snake-game-with-react-redux-and-redux-sagas/#prerequisites
+
+** Setting React Application and Data Layer
+
+1. First we setup the basic project with React and Typescript.
+
+2. Configure this project with a global state ( REDUX ) and for handling side-effects used (Redux-Saga).
+
+Codes : 
+
+a. npx create-react-app snake-game
+b. cd snake-game
+c. npm run start
+d. npm install redux react-redux redux-saga
+e. mkdir store
+
+Store Structure - 
+store/
+├── actions
+│   └── index.ts
+├── reducers
+│   └── index.ts
+└── sagas
+    └── index.ts
+├── index.ts
+
+** Understanding UI Layer - Consists of 3 Layers
+
+a. Score Calculator
+b. Canvas Board
+c. Instructions
+
+Explanation: Most Important Component is Canvas Board consists of HTML element - canvas.
+
+context of canvas 
+- Provides all the information of the canvas element. 
+- It gives the dimenstion of the canvas and helps to draw on the canvas
+- getCanvas('2d') function helps in getting the context of the canvas which returns the 2d context of the canvas; return type is "CanvasRenderingContext2D" interface
+
+Vanilla JS : We can get the context like below:-
+
+const canvas = document.querySelector("canvas");
+const canvasCtx = canvas.getContext('2d);
+
+But in React, we need to create the ref and pass it to the canvas element so that later we can use it in different hooks.
+
+So After getting the Context, we need to do three things - 
+a. clear the canvas - it will be done multiple times so we need to create a utility fn 
+b. Draw snake with current position
+c. Draw a fruit at a random position inside the box
+
