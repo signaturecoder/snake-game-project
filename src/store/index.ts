@@ -10,13 +10,14 @@
 import { legacy_createStore as createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import gameReducer from "./reducers";
+import watcherSaga from "./sagas";
 // import watcherSagas from "./sagas";
-// const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware();
 
-// const store = createStore(gameReducer, applyMiddleware(sagaMiddleware));
-const store = createStore(gameReducer);
+const store = createStore(gameReducer, applyMiddleware(sagaMiddleware));
+// const store = createStore(gameReducer);
 
 // statement to run saga middleware
-// sagaMiddleware.run(watcherSagas);
+sagaMiddleware.run(watcherSaga);
 
 export default store;

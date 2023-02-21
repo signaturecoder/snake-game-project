@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { makeMove, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP } from "../store/actions";
 import { IGlobalState } from "../store/reducers";
-import { drawObject, generateRandomPosition, IObjectBody } from "../utilities";
+import { clearBoard, drawObject, generateRandomPosition, IObjectBody } from "../utilities";
 
 export interface ICanvasBoard {
     height: number;
@@ -10,6 +11,10 @@ export interface ICanvasBoard {
 // Canvas Board dimension (height * width) 600 * 1000 divides into blocks of dimenstion (20 * 20)
 const CanvasBoard = ({ height, width }: ICanvasBoard) => {
 
+    const dispatch = useDispatch();
+    // get the snake position from global state
+    const snake1 = useSelector((state: IGlobalState) => state.snake);
+    const disallowedDirection = useSelector((state: IGlobalState) => state.disallowedDirection);
     // create a canvas Ref to pass it into canvas element.
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -17,16 +22,93 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
     // be set to either "null" or an "HTMLElement" instance., Here the ref is initialized with null because the component is not rendered yet.
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
 
-    // get the snake position from global state
-    const snake1 = useSelector((state: IGlobalState) => state.snake);
-    const [pos, setPos] = useState<IObjectBody>(generateRandomPosition(width -20, height- 20));
+    const [pos, setPos] = useState<IObjectBody>(generateRandomPosition(width - 20, height - 20));
     
+    // dispatching actions based on their coordinates
+    const moveSnake = useCallback((dx = 0, dy = 0, ds: string) => {
+        console.log(" DS :", ds);
+        console.log("Start game dimenstion: dx", dx);
+        console.log("Start game dimenstion: dy", dy);
+        
+        
+        if(dx > 0 && dy === 0 && ds !== "RIGHT"){
+            console.log("if stgart");
+            
+            dispatch(makeMove(dx, dy, MOVE_RIGHT));
+        }
+
+        if(dx < 0 && dy === 0 && ds !== "LEFT"){
+            dispatch(makeMove(dx, dy, MOVE_LEFT));
+        }
+
+        if(dx === 0 && dy < 0 && ds !== "DOWN"){
+            console.log("Fif start 2");
+            
+            dispatch(makeMove(dx, dy, MOVE_DOWN));
+        }
+
+        if(dx === 0 && dy > 0 && ds !== "UP"){
+            dispatch(makeMove(dx, dy, MOVE_UP));
+        }
+    }, [dispatch]);
+
+    // memoized the function  which called on every state change i,e disallowedDirection and moveSnake
+    // called this function on every key pressed on Keyboard
+    const handleKeyEvents = useCallback((event: KeyboardEvent) => {
+        console.log("Key :", event.key);
+        
+        console.log("Disallowed direction - Canvas Board : ", disallowedDirection)
+        if(disallowedDirection) {
+            switch(event.key) {
+                case "w": 
+                    moveSnake(0, -20, disallowedDirection);
+                    break;
+                case "s": 
+                    moveSnake(0, 20, disallowedDirection);
+                    break;
+                case "a": 
+                    moveSnake(-20, 0, disallowedDirection);
+                    break;
+                case "d": 
+                    event.preventDefault();
+                    moveSnake(20, 0, disallowedDirection);
+                    break;
+            }
+        } else {
+            if (
+                disallowedDirection !== "LEFT" && 
+                disallowedDirection !== "UP" && 
+                disallowedDirection !== "DOWN" && 
+                event.key === "d"
+            )
+                moveSnake(20, 0, disallowedDirection); // Move RIGHT at sstart
+        }
+    }, 
+    [disallowedDirection, moveSnake]);
+
     useEffect(() => {
         // Draw on canvas each time
+        console.log("After Context Changed:", context);
         setContext(canvasRef.current && canvasRef.current.getContext("2d")); // store in state variable
+        clearBoard(context);
         drawObject(context, snake1, "#91C483"); // Draws snake at the required position
-        drawObject(context, [pos], "#676FA3"); // Draws fruit randomly
-    }, [context])
+        // drawObject(context, [pos], "#676FA3"); // Draws fruit randomly
+    }, [context, snake1])
+
+    useEffect(() => {
+        window.addEventListener("keypress", handleKeyEvents);
+        console.log("key pressed useEffect");
+        
+        return () => {
+            window.removeEventListener("keypress", handleKeyEvents);
+        };
+    }, [disallowedDirection, handleKeyEvents]);
+
+
+
+    console.log("Context:", context);
+    console.log("Snake 1: From Global State ", snake1);
+    
 
     return (
         <canvas 

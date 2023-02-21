@@ -28,10 +28,13 @@ export const drawObject = (
     ) => {
     if(context) {
         objectBody.forEach((object: IObjectBody) => {
+            console.log("Object : ", object);
+            
             context.fillStyle = fillColor;
             context.strokeStyle = strokeStyle;
             context?.fillRect(object.x, object.y, 20, 20);
             context?.strokeRect(object.x , object.y, 20, 20);
+            console.log("After Update Object : ", object);
         })
     }
 }
