@@ -11,7 +11,7 @@ export function* moveSaga(params: {type: string; payload: ISnakeCoord;}): Genera
 | CallEffect<true>
 > {
     console.log("coming from move saga", params);
-    // while(true) {
+    while(true) {
         // dispatches movement actions
         yield put({
             type: params.type.split("_")[1],
@@ -34,7 +34,7 @@ export function* moveSaga(params: {type: string; payload: ISnakeCoord;}): Genera
                 break;
         }
         yield delay(100);
-    // }
+    }
 }
 
 

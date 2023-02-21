@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { makeMove, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP } from "../store/actions";
+import { increaseSnake, INCREMENT_SCORE, makeMove, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, scoreUpdates } from "../store/actions";
 import { IGlobalState } from "../store/reducers";
 import { clearBoard, drawObject, generateRandomPosition, IObjectBody } from "../utilities";
 
@@ -23,7 +23,7 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
 
     const [pos, setPos] = useState<IObjectBody>(generateRandomPosition(width - 20, height - 20));
-    
+    const [isConsumed, setIsConsumed] = useState<Boolean>(false);
     // dispatching actions based on their coordinates
     const moveSnake = useCallback((dx = 0, dy = 0, ds: string) => {
         console.log(" DS :", ds);
@@ -32,8 +32,6 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
         
         
         if(dx > 0 && dy === 0 && ds !== "RIGHT"){
-            console.log("if stgart");
-            
             dispatch(makeMove(dx, dy, MOVE_RIGHT));
         }
 
@@ -42,8 +40,6 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
         }
 
         if(dx === 0 && dy < 0 && ds !== "DOWN"){
-            console.log("Fif start 2");
-            
             dispatch(makeMove(dx, dy, MOVE_DOWN));
         }
 
@@ -86,15 +82,37 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
     }, 
     [disallowedDirection, moveSnake]);
 
+    // useEffect 2
+    useEffect(() => {
+        if(isConsumed) {
+            console.log("inside is comsumed true statement");
+            const pos = generateRandomPosition(width - 20, height - 20);
+            setPos(pos);
+            setIsConsumed(false);
+            // Increase snake size when the object is consumed successfully
+            dispatch(increaseSnake());
+
+            // Increament the score
+            dispatch(scoreUpdates());
+        }
+    }, [isConsumed, pos, height, width, dispatch])
+    // useEffect 1
     useEffect(() => {
         // Draw on canvas each time
         console.log("After Context Changed:", context);
         setContext(canvasRef.current && canvasRef.current.getContext("2d")); // store in state variable
         clearBoard(context);
         drawObject(context, snake1, "#91C483"); // Draws snake at the required position
-        // drawObject(context, [pos], "#676FA3"); // Draws fruit randomly
-    }, [context, snake1])
+        drawObject(context, [pos], "#676FA3"); // Draws fruit randomly
 
+        // when the object is consumed 
+        if(snake1[0].x === pos?.x && snake1[0].y === pos?.y){
+            setIsConsumed(true);
+        }
+    
+    }, [context, pos,  snake1])
+
+    // useEffect 0
     useEffect(() => {
         window.addEventListener("keypress", handleKeyEvents);
         console.log("key pressed useEffect");
@@ -103,8 +121,6 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
             window.removeEventListener("keypress", handleKeyEvents);
         };
     }, [disallowedDirection, handleKeyEvents]);
-
-
 
     console.log("Context:", context);
     console.log("Snake 1: From Global State ", snake1);

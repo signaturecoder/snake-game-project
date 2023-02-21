@@ -11,6 +11,8 @@ export const UP = 'UP';
 export const DOWN = 'DOWN';
 
 export const SET_DIS_DIRECTION = 'SET_DIS_DIRECTION';
+export const INCREMENT_SCORE = 'INCREMENT_SCORE';
+export const INCREASE_SNAKE = 'INCREASE_SNAKE';
 
 export interface ISnakeCoord {
     x: number;
@@ -29,3 +31,11 @@ export const setDisDirection = (direction: string) => ({
     type: SET_DIS_DIRECTION,
     payload: direction
 });
+
+export const increaseSnake = () => ({
+    type: INCREASE_SNAKE
+})
+
+export const scoreUpdates = () => ({
+    type: INCREMENT_SCORE
+})
