@@ -68,3 +68,25 @@ Calculating the reward -
 3. Place a new fruit at a different random location - we need to randomly generate a fruit at another location which we will do in the above useEffect 
 
 4. Increase the score card each time - create a new variable at global level called score and update this.
+
+Collision Detection: 
+
+1. Either collides with self 
+2. or collides with the boundary of the canvas
+
+
+5. Instructions Component
+
+-- ResetBoard
+    a. Remove the event listner from window object
+    b. dispatch the resetGame action
+    c. dispatch the reset score on score scoreUpdates
+    d. clear the canvas
+    e. draw the snake at its initial position
+    f. draw the fruit at new random position
+    g. Add the listner to restart the game
+
+
+-- BUGS --
+1. Whenever the fruit is consumed, score increased 2*original score - Because the action is dispatched twice
+

@@ -1,4 +1,4 @@
-import { DOWN, INCREASE_SNAKE, INCREMENT_SCORE, ISnakeCoord, LEFT, RIGHT, SET_DIS_DIRECTION, UP } from "../actions";
+import { DOWN, INCREASE_SNAKE, INCREMENT_SCORE, ISnakeCoord, LEFT, RESET, RESET_SCORE, RIGHT, SET_DIS_DIRECTION, UP } from "../actions";
 
 export interface IGlobalState {
     snake: ISnakeCoord[] | [];
@@ -19,6 +19,8 @@ const GlobalState: IGlobalState = {
 };
 
 const gameReducer = (state = GlobalState, action: any) => {
+    // console.log("Action Type: ", action.type);
+    
     switch(action.type) {
         case RIGHT:
         case LEFT:
@@ -44,6 +46,8 @@ const gameReducer = (state = GlobalState, action: any) => {
 
         case INCREASE_SNAKE:
             const snakeLen = state.snake.length;
+            console.log("Snake Length: ", snakeLen);
+            
             return {
                 ...state, 
                     snake: [
@@ -54,8 +58,24 @@ const gameReducer = (state = GlobalState, action: any) => {
                     ],
                 };
 
-        case INCREMENT_SCORE: 
+        case INCREMENT_SCORE:
+            console.log("State Score :", state.score); 
                 return {...state, score: state.score + 1};
+        
+        case RESET_SCORE:
+            return {...state, score: 0};
+
+        case RESET: 
+            return {...state, 
+                snake: [ 
+                    { x: 580, y: 300 },
+                    { x: 560, y: 300 },
+                    { x: 540, y: 300 },
+                    { x: 520, y: 300 },
+                    { x: 500, y: 300 },
+                ],
+                disallowedDirection: ""
+            };
         default:
             return state;
     }

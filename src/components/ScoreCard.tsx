@@ -4,6 +4,8 @@ import { IGlobalState } from "../store/reducers";
 
 const ScoreCard = () => {
     const score = useSelector((state: IGlobalState) => state.score);
+    console.log("Score Card :", score);
+    
     return (<Heading as="h2" size="md" mt={5} mb={5}>Current Score: {score}</Heading>)
 }
 
